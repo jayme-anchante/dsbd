@@ -30,13 +30,13 @@ if [ -d "$dir1" ]; then
             # check whether cp operation
 
                 if [ $# == 4 ]; then
-                # checke whether rename in the same folder
+                # check whether rename in the same folder
 
                     echo "Renaming file $dir1$fileName.$ext1 to $dir1$fileName.$ext2"
                     cp $dir1$fileName.$ext1 $dir1$fileName.$ext2
 
                 elif [ $# == 5 ]; then
-                # check whether rename and copy to another fodler
+                # check whether rename and copy to another folder
 
                     echo "Copying and renaming file from $dir1$fileName.$ext1 to $dir2$fileName.$ext2"
                     cp $dir1$fileName.$ext1 $dir2$fileName.$ext2
