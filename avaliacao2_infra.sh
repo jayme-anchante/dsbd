@@ -15,12 +15,25 @@ if [ -d "$dir1" ]; then
         if [ -r "$file" ]; then
 
             fileName=$(basename $file .$ext1)
+
             if [ "$param" == "-m" ]; then
+
                 echo "Changing file $dir1$fileName.$ext1 to $fileName.$ext2"
                 mv $dir1$fileName.$ext1 $dir1$fileName.$ext2
+
             elif [ "$param" == "-c" ]; then
-                echo "Copying and renaming file $dir1$fileName.$ext1 to $dir2$fileName.$ext2"
-                cp $dir1$fileName.$ext1 $dir2$fileName.$ext2
+
+                if [ $# == 4 ]; then
+
+                    echo "Renaming file $dir1$fileName.$ext1 to $dir1$fileName.$ext2"
+                    cp $dir1$fileName.$ext1 $dir1$fileName.$ext2
+
+                elif [ $# == 5 ]; then
+
+                    echo "Copying and renaming file from $dir1$fileName.$ext1 to $dir2$fileName.$ext2"
+                    cp $dir1$fileName.$ext1 $dir2$fileName.$ext2
+                fi
+
             else echo "Not a valid command, try either -c or -m"
             fi
 
