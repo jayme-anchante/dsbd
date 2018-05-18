@@ -1,0 +1,23 @@
+<h1 id="um-documento-em-markdown">Um documento em Markdown</h1>
+<h2 id="sobre-o-markdown">Sobre o Markdown</h2>
+<p>O Markdown é uma linguagem de marcação muito simples, desenvolvida por John Gruber.</p>
+<p>A ideia básica por trás da linguagem é fazer com que o escritor se preocupe mais com o <strong>conteúdo</strong> do texto do que com a <em>formatação</em>.</p>
+<h2 id="mais-um-título">Mais um título</h2>
+<p>Aqui vamos tentar descrever uma análise.</p>
+<h2 id="simulando-variáveis-aleatórias">Simulando variáveis aleatórias</h2>
+<p>No R podemos simular valores de uma distribuição normal padrão através da função <code>rnorm()</code>.</p>
+<p>Seja <span class="math inline"><em>X</em> ∼ N(0, 1)</span>, então para gerar 30 valores dessa variável aleatório normal, fazemos</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">(x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">30</span>))</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co">#  [1] -0.42467959 -2.25107146 -1.52165046 -1.11245008  0.04206908</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co">#  [6]  1.72039998 -0.90518886 -1.25296298 -1.00606660  0.70580438</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co"># [11] -1.04481021 -0.83986320  0.20977533 -1.29532233 -0.88080279</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># [16]  0.29931424 -1.01078129 -0.23946143 -0.31219273  0.25599145</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co"># [21] -0.41649549  0.32770910  0.50203391 -1.00626305 -1.09926016</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co"># [26]  0.83006728  0.45307613 -0.44151870  0.18602064  0.23174935</span></a></code></pre></div>
+<h2 id="comentários">Comentários</h2>
+<p>Com o resultado dessa simulação, podemos calcular a média e a variância dessa VA <span class="math inline"><em>X</em></span> para conferir se o resultado fica próximo de 0 e 1, respectivamente.</p>
+<h2 id="visualização">Visualização</h2>
+<p>Também podemos fazer um histograma dessa VA <span class="math inline"><em>X</em></span> simulada</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">hist</span>(x)</a></code></pre></div>
+<p><img src="documentos-dinamicos_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>A média de <span class="math inline"><em>X</em></span> é -0.377.</p>
