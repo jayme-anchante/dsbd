@@ -1,0 +1,254 @@
+---
+title: "Exercício 1: *Bootstrap*"
+author: "Fernando Mayer"
+date: "2018-03-19"
+output:
+  pdf_document:
+    toc: false
+    highlight: "default"
+documentclass: article
+classoption: a4paper
+fontsize: 10pt
+geometry: margin=2.5cm
+urlcolor: blue
+header-includes:
+  - \usepackage{amsmath}
+  - \usepackage{mathpazo}
+  #- \usepackage[scaled]{beramono}
+  - \usepackage{inconsolata}
+---
+
+# Introdução
+
+O *bootstrap* é uma técnica de estimação de parâmetros desconhecidos de
+uma população, baseada em amostragem aleatória com reposição. A ideia é
+relativamente simples: com a amostra observada (de tamanho $n$), fazemos
+um grande número ($r$) de reamostragens  (e.g. 1000) com reposição de
+tamanho $m \leq n$, e calculamos a estatística de interesse. Dessa
+forma, teremos $r$ estimativas diferentes da estatística que temos
+interesse, e a partir disso, podemos obter a distribuição amostral dessa
+estatística e outras medidas pontuais (e.g. média, mediana), e medidas
+de variação (e.g. variância, intervalos de confiança). Para mais
+informações (gerais) veja:
+\url{https://en.wikipedia.org/wiki/Bootstrapping_(statistics)}.
+
+# Objetivos
+
+O objetivo deste exercício é programar um *bootstrap* para a estimativa
+da média de uma população simulada. O objetivo é programar o método sem
+ser rigoroso com os detalhes teóricos.
+
+# Procedimento
+
+Copie o código abaixo para um script do R, substituindo a *string*
+`"<seu_numero_de_matricula>"` pelo número de sua matrícula na UFPR
+(numérico). Esse número será utilizado como semente para gerar a
+sua população de 1 milhão de números simulados a partir de uma
+distribuição Normal (objeto `pop`). Depois, são amostrados 1000
+elementos dessa população para gerar a sua amostra (`amostra`).
+```{r, eval=FALSE}
+## Insira aqui o número da sua matrícula para fixar uma semente
+matricula <- "<seu_numero_de_matricula>"
+## Gera 1 milhão de números aleatórios de uma distribuição normal
+set.seed(matricula)
+pop <- rnorm(n = 1e6, mean = 100, sd = sqrt(200))
+## Retira uma amostra aleatória de tamanho n = 1000 da população
+amostra <- pop[sample(1:length(pop), size = 1000)]
+```
+Note que, por ser um exercício de simulação, você conhece o verdadeiro
+valor da média populacional (a média de `pop`). A média da amostra já é
+uma estimativa da verdadeira média populacional. Na prática essa seria a
+única estimativa que teríamos, e toda inferência seria baseada nessa
+amostra. A ideia do *bootstrap* é então obter a distribuição amostral
+dessa estimativa e estudar seu comportamento.
+
+A seguir serão apresentados os pseudo-códigos para dois exercícios de
+*bootstrap*. O primeiro faz as reamostragens para um tamanho de amostra
+$m$ fixo, enquanto que o segundo permite variar esse número para avaliar
+o impacto desse número nas esimativas.
+
+Para ambos exercícios, você deve fazer/criar:
+
+- Um objeto com a classe e dimensão apropriados para armazenar os
+  resultados de cada reamostragem.
+- Uma função que calcule a diferença absoluta entre dois números, e
+  usá-la para calcular as diferenças entre a média da população
+  (verdadeira) e as médias obtidas via *bootstrap*.
+- Um histograma das $r$ estimativas (para cada valor de $m$ no exercício
+  2), com uma linha vertical indicando a média populacional (verdadeira).
+
+
+## Exercício 1
+
+Algoritmo geral para desenvolver o método, considerando o tamanho da
+amostra ($m$) fixo:
+
+1. Com os dados da amostra, gere uma nova amostra aleatória (**com
+   reposição**) de tamanho $m = 500$.
+2. Calcule a média dessa nova amostra.
+3. Repita esse procedimento $r = 100000$ vezes.
+4. Faça um histograma das $r$ estimativas, calcule a média e compare com
+   a média verdadeira.
+
+## Exercício 2
+
+Algoritmo geral para desenvolver o método, considerando o tamanho da
+amostra ($m$) variando entre quatro valores diferentes:
+
+1. Com os dados da amostra, gere uma nova amostra aleatória (**com
+   reposição**) com tamanhos: $m = 100, 300, 500, 700$.
+2. Calcule a média dessa nova amostra, para cada valor de $m$.
+3. Repita esse procedimento $r = 100000$ vezes, para cada valor de $m$.
+4. Faça um histograma das $r$ estimativas, calcule a média e compare com
+   a média verdadeira (para cada valor de $m$).
+
+
+```{r intro, eval=TRUE, include=TRUE}
+## Insira aqui o numero da sua matrícula para fixar uma semente
+matricula <- 20181234
+## Gera 1 milhão de números aleatórios de uma distribuição normal
+set.seed(matricula)
+pop <- rnorm(n = 1e6, mean = 100, sd = sqrt(200))
+## Retira uma amostra aleatória de tamanho n = 1000 da população
+amostra <- pop[sample(1:length(pop), size = 1000)]
+```
+
+```{r ex1, eval=TRUE, include=TRUE, out.width='60%', fig.width=8, fig.height=6,fig.align='center'}
+## Exercício 1 ---------------------------------------------------------
+
+## Número de amostras
+r <- 1e5
+## Número de elementos em cada amostra
+m <- 500
+## Vetores para armazenar os resultados
+med.boot <- numeric(r)
+
+## Reamostragens
+for(i in 1:r){
+    select <- sample(1:length(amostra), size = m, replace = TRUE)
+    amostra.boot <- amostra[select]
+    med.boot[i] <- mean(amostra.boot)
+}
+
+## Função para calcular as diferenças absolutas
+abs.diff <- function(x, y){
+    abs(x - y)
+}
+
+## Diferença absoluta
+mean(pop)
+mean(med.boot)
+abs.diff(mean(pop), mean(med.boot))
+
+## Histograma
+hist(med.boot, freq = FALSE, main = "",
+     xlab = "Médias", ylab = "Densidade")
+abline(v = mean(pop), col = 2, lty = 2)
+
+## Usando lattice
+library(lattice)
+histogram(~ med.boot, col = "white", type = "density",
+          xlab = "Médias", ylab = "Densidade",
+          panel = function(x, ...){
+    panel.histogram(x, ...)
+    panel.abline(v = mean(pop), col = 2, lty = 2)
+})
+
+## Usando ggplot2
+library(ggplot2)
+ggplot(mapping = aes(x = med.boot)) +
+    geom_histogram(aes(y = ..density..), binwidth = .5,
+                   color = "black", fill = "white") +
+    geom_vline(xintercept = mean(pop), color = 2, linetype = 2) +
+    xlab("Médias") + ylab("Densidade")
+
+```
+
+```{r ex2, eval=TRUE, include=TRUE, out.width='90%', fig.width=8, fig.height=6,fig.alin='center'}
+## Exercício 2 ---------------------------------------------------------
+
+## Número de amostras
+r <- 1e5
+## Valores possíveis de m
+m <- c(100, 300, 500, 700)
+## Cria uma matriz para armazenar os resultados. Cada coluna será um
+## valor de m, e cada linha a média de uma reamostragem
+med.boot.mat <- matrix(0, nrow = r, ncol = length(m))
+
+## Reamostragens
+for(i in 1:length(m)){
+    for(j in 1:r){
+        select <- sample(1:length(amostra), size = m[i], replace = TRUE)
+        amostra.boot <- amostra[select]
+        med.boot.mat[j, i] <- mean(amostra.boot)
+    }
+}
+
+## Função para calcular as diferenças absolutas
+abs.diff <- function(x, y){
+    abs(x - y)
+}
+
+## Diferenças absolutas
+mean(pop)
+apply(med.boot.mat, 2, mean)
+abs.diff(mean(pop), apply(med.boot.mat, 2, mean))
+
+## Histograma
+## Fazer usando as funções gráficas tradicionais é trabalhoso. Um
+## exemplo seria:
+
+## Verifica a amplitude dos dados para fixar o eixo X
+range(med.boot.mat)
+## Divide a janela gráfica em 4 linhas e 1 coluna
+par(mfrow = c(4, 1))
+apply(med.boot.mat, 2, function(x){
+    hist(x, freq = FALSE, main = "", xlab = "Média",
+         ylab = "Densidade", xlim = c(93, 107))
+    abline(v = mean(pop), col = 2, lty = 2)
+})
+par(mfrow = c(1, 1))
+
+## Para usar os pacotes lattice ou ggplot2, precisamos antes "empilhar"
+## as colunas da matriz de saída, ficando com apenas duas colunas: uma
+## que identifique cada observação, e outra com as próprias observações.
+## Também existem várias formas de fazer isso, mas a mais simples é
+## usando a função stack()
+
+## Antes, converte a matriz para data frame e da nomes para cada coluna
+med.boot.df <- as.data.frame(med.boot.mat)
+names(med.boot.df) <- paste0("m", m)
+str(med.boot.df)
+
+## Usa stack() para converte do formato "wide" para o formato "long"
+med.boot.df <- stack(med.boot.df)
+str(med.boot.df)
+head(med.boot.df)
+## Note que agora ficamos só com duas colunas: "values" que armazena s
+## valores que estavam nas colunas, e "ind" que identifica cada linha de
+## acordo com o nome da coluna
+
+## Usando lattice
+histogram(~ values | ind, data = med.boot.df, col = "white", type = "density",
+          xlab = "Médias", ylab = "Densidade",
+          as.table = TRUE, layout = c(1, 4),
+          strip = strip.custom(factor.levels = paste0("m = ", m)),
+          panel = function(x, ...){
+    panel.histogram(x, ...)
+    panel.abline(v = mean(pop), col = 2, lty = 2)
+})
+
+## Usando ggplot2
+## Para que os nomes da cada gráfico apareçam corretamente, é necessário
+## mudar os níveis dos fatores para o texto desejado
+str(med.boot.df)
+levels(med.boot.df$ind) <- paste0("m = ", m)
+## Isso também poderia ter sido feito para o lattice, mas lá existe uma
+## maneira simples de alterar o ttexto com strip.custom()
+ggplot(med.boot.df, mapping = aes(x = values)) +
+    geom_histogram(aes(y = ..density..), binwidth = .5,
+                   color = "black", fill = "white") +
+    geom_vline(xintercept = mean(pop), color = 2, linetype = 2) +
+    xlab("Médias") + ylab("Densidade") +
+    facet_wrap(~ ind, ncol = 1)
+```

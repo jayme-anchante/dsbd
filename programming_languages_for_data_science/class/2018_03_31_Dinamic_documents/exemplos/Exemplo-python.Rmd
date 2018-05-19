@@ -1,0 +1,76 @@
+---
+title: "Misturando códigos R e Python"
+author: "Fernando Mayer"
+date: "Abril, 2018"
+output:
+  html_document:
+    theme: flatly
+---
+
+Código R funciona
+
+```{r}
+rnorm(10)
+```
+
+Para usar o Python, mude a *engine* para `python` no chunk.
+
+```{python}
+import sys
+print(sys.version)
+x = 'hello, python world!'
+print(x.split(' '))
+```
+
+Importa dados com **pandas**. Também carrega o **feather** para exportar
+o DataFrame e depois importar no R.
+
+```{python}
+import pandas as pd
+import feather
+import matplotlib.pyplot as plt
+
+## Importação
+gap = pd.read_csv("pib_gapminder.csv")
+gap.info()
+```
+
+Cria um gráfico usanso a **matplotlib**.
+
+```{python, out.width='80%', fig.align='center'}
+## Cria um gráfico com matplotlib
+ax = gap.plot.scatter(x = "pibPercap", y = "expVida")
+ax.set_yscale('log')
+ax.set_xscale('log')
+plt.show()
+```
+
+Cria um novo objeto com apenas duas colunas da base de dados original,
+para poder exportar.
+
+```{python}
+## Faz um subset
+gap2 = gap[["pibPercap", "expVida"]]
+gap2.info()
+## Exporta para formato do feather
+feather.write_dataframe(gap2, "gap2.feather")
+```
+
+Carrega o objeto gerado pelo feather no R, usando o pacote **feather**:
+
+```{r}
+library(feather)
+## Importa objeto gerado pelo Python
+gap2 <- read_feather("gap2.feather")
+str(gap2)
+```
+
+Gráfico com **ggplot2**:
+
+```{r, out.width='80%', fig.align='center'}
+library(ggplot2)
+ggplot(gap2, aes(pibPercap, expVida)) +
+    geom_point() +
+    scale_x_log10() +
+    scale_y_log10()
+```
